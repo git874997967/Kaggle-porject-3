@@ -76,73 +76,87 @@ rpart.plot(d)
 
 #### 将连续型变量变成离散型变量  借助决策树模型
 data$temp_reg = 0
-data$temp_reg[data$hour1 == 0 |
-                data$hour1 == 1 |
-                data$hour1 == 2 |
-                data$hour1 == 3 |
-                data$hour1 == 4 |
-                data$hour1 == 5 |
-                data$hour1 == 6 |
-                data$hour1 == 7 |
-                data$hour1 == 8 |
-                data$hour1 == 9 |
-                data$hour1 == 21 | data$hour1 == 22 |
-                data$hour1 == 23] = 1
-data$temp_reg[data$hour1 == 10 |
-                data$hour1 == 11 |
-                data$hour1 == 12 |
-                data$hour1 == 13 |
-                data$hour1 == 14 |
-                data$hour1 == 15 |
-                data$hour1 == 16 |
-                data$hour1 == 17 |
-                data$hour1 == 18 | data$hour1 == 19 |
-                data$hour1 == 20] = 2
+data$temp_reg[data$hour1%in%c(0,1,2,3,4,5,6,7,8,9,23,21,22)]=1
+data$temp_reg[data$hour1%in%c(10:20)]=2
+# data$temp_reg[data$hour1 == 0 |
+#                 data$hour1 == 1 |
+#                 data$hour1 == 2 |
+#                 data$hour1 == 3 |
+#                 data$hour1 == 4 |
+#                 data$hour1 == 5 |
+#                 data$hour1 == 6 |
+#                 data$hour1 == 7 |
+#                 data$hour1 == 8 |
+#                 data$hour1 == 9 |
+#                 data$hour1 == 21 | data$hour1 == 22 |
+#                 data$hour1 == 23] = 1
+
+# data$temp_reg[data$hour1 == 10 |
+#                 data$hour1 == 11 |
+#                 data$hour1 == 12 |
+#                 data$hour1 == 13 |
+#                 data$hour1 == 14 |
+#                 data$hour1 == 15 |
+#                 data$hour1 == 16 |
+#                 data$hour1 == 17 |
+#                 data$hour1 == 18 | data$hour1 == 19 |
+#                 data$hour1 == 20] = 2
 
 
 
 
 ###
-data$dp_reg[data$hour1 == 0 |
-              data$hour1 == 1 |
-              data$hour1 == 2 |
-              data$hour1 == 3 |
-              data$hour1 == 4 | data$hour1 == 5 | data$hour1 == 6 |
-              data$hour1 == 23] = 1
-data$dp_reg[data$hour1 == 10 |
-              data$hour1 == 11 |
-              data$hour1 == 21 | data$hour1 == 22] = 2
-data$dp_reg[data$hour1 == 7 |
-              data$hour1 == 9 |
-              data$hour1 == 12 |
-              data$hour1 == 13 |
-              data$hour1 == 14 | data$hour1 == 15 |
-              data$hour1 == 20] = 3
-data$dp_reg[data$hour1 == 16 | data$hour1 == 19] = 4
-data$dp_reg[data$hour1 == 8 |
-              data$hour1 == 17 | data$hour1 == 18] = 5
+data$dp_reg[data$hour1%in%c(0,1,2,3,4,5,6,23)]=1
+data$dp_reg[data$hour1%in%c(10,11,21,22)]=2
+data$dp_reg[data$hour1%in%c(7,9,12,13,14,15,20)]=3
+data$dp_reg[data$hour1%in%c(16,19)]=4
+data$dp_reg[data$hour1%in%c(8,17,18)]=5
+# data$dp_reg[data$hour1 == 0 |
+#               data$hour1 == 1 |
+#               data$hour1 == 2 |
+#               data$hour1 == 3 |
+#               data$hour1 == 4 | data$hour1 == 5 | data$hour1 == 6 |
+#               data$hour1 == 23] = 1
+# data$dp_reg[data$hour1 == 10 |
+#               data$hour1 == 11 |
+#               data$hour1 == 21 | data$hour1 == 22] = 2
+# data$dp_reg[data$hour1 == 7 |
+#               data$hour1 == 9 |
+#               data$hour1 == 12 |
+#               data$hour1 == 13 |
+#               data$hour1 == 14 | data$hour1 == 15 |
+#               data$hour1 == 20] = 3
+# data$dp_reg[data$hour1 == 16 | data$hour1 == 19] = 4
+# data$dp_reg[data$hour1 == 8 |
+#               data$hour1 == 17 | data$hour1 == 18] = 5
 # data$dp_reg[data$hour1>=20&data$hour1<22]=6
 # data$dp_reg[data$hour1>=18&data$hour1<20]=7
 data$dp_cas = 0
-data$dp_cas[data$hour1 == 0 |
-              data$hour1 == 1 |
-              data$hour1 == 2 |
-              data$hour1 == 3 |
-              data$hour1 == 4 |
-              data$hour1 == 5 | data$hour1 == 6 | data$hour1 == 7 |
-              data$hour1 == 23] = 1
-data$dp_cas[data$hour1 == 8 |
-              data$hour1 == 9 |
-              data$hour1 == 20 | data$hour1 == 21 |
-              data$hour1 == 22] = 2
-data$dp_cas[data$hour1 == 10 |
-              data$hour1 == 11 |
-              data$hour1 == 18 | data$hour1 == 19] = 3
-data$dp_cas[data$hour1 == 12 |
-              data$hour1 == 13 |
-              data$hour1 == 14 |
-              data$hour1 == 15 | data$hour1 == 16 |
-              data$hour1 == 17] = 4
+# data$dp_cas[data$hour1 == 0 |
+#               data$hour1 == 1 |
+#               data$hour1 == 2 |
+#               data$hour1 == 3 |
+#               data$hour1 == 4 |
+#               data$hour1 == 5 | data$hour1 == 6 | data$hour1 == 7 |
+#               data$hour1 == 23] = 1
+
+data$dp_cas[data$hour1%in%c(0,1,2,3,4,5,6,7,23)]=1
+data$dp_cas[data$hour1%in%c(8,9,20,21,22)]=2
+data$dp_cas[data$hour1%in%c(10,11,18,19,12)]=3
+data$dp_cas[data$hour1%in%c(12,13,14,15,16,17)]=4
+ 
+# data$dp_cas[data$hour1 == 8 |
+#               data$hour1 == 9 |
+#               data$hour1 == 20 | data$hour1 == 21 |
+#               data$hour1 == 22] = 2
+# data$dp_cas[data$hour1 == 10 |
+#               data$hour1 == 11 |
+#               data$hour1 == 18 | data$hour1 == 19] = 3
+# data$dp_cas[data$hour1 == 12 |
+#               data$hour1 == 13 |
+#               data$hour1 == 14 |
+#               data$hour1 == 15 | data$hour1 == 16 |
+#               data$hour1 == 17] = 4
 ### 增加日期类型
 data$daytype = ""
 data$daytype[data$holiday == 1] = "holiday"
@@ -160,22 +174,24 @@ set.seed(1234)
 train=data[data$label=='train',] 
 test=data[data$label=='test',]
 
- 
+str(train) 
+
+
 train$logreg = log(train$registered + 1)
 train$logcas = log(train$casual + 1)
-fit1 = randomForest(
-  logreg ~ hour1 + workingday + day +weekend + holiday  + temp_reg + humidity +
+fit1 = ranger(
+  formula = logreg ~ hour1 + workingday + day +weekend + holiday  + temp_reg + humidity +
     atemp + windspeed + season + weather + dp_reg +  year,
   data = train,
-  ntree = 250,
-  importance = T
+  num.trees = 250
+  
 )
-fit2 = randomForest(
-  logcas ~ hour1 + workingday + day+weekend  + holiday  + temp_reg + humidity +
+fit2 = ranger(
+  formula =logcas ~ hour1 + workingday + day+weekend  + holiday  + temp_reg + humidity +
     atemp + windspeed + season + weather + dp_cas +  year,
   data = train,
-  ntree = 250,
-  importance = T
+  num.trees = 250
+   
 )
 
 
@@ -183,16 +199,16 @@ p1=predict(fit1,test)
 test$logreg=p1
 p2=predict(fit2,test)
 test$logcas=p2
-
+head(test)
 test$registered=exp(test$logreg)
 test$casual=exp(test$logcas)
 test$count=test$registered+test$casual
 submit_final=data.frame(datetime=test$datetime,count=as.integer(test$count))
 write.csv(submit_final,"sub1.csv")
-head(test$datetime)
-
-head(submit_final$datatime)
-head(submit_final)
-t1=read.csv("randomForest.csv")
-str(t1)
-str(submit_final)
+head(submit_final,20)
+# 
+# head(submit_final$datatime)
+# head(submit_final)
+# t1=read.csv("randomForest.csv")
+# str(t1)
+# str(submit_final)
