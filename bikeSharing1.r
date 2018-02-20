@@ -42,7 +42,7 @@ str(data)
 data$hour1 = as.factor(hour(data$datetime))
 # data$hour2 = substr(data$datetime, 12, 13)
 data$day = weekdays(as.Date(data$datetime))
-data$test = data$temp * data$humidity
+data$weatherCond = data$temp * data$humidity
 # in chinese envoronment use code below
 # data$day[data$day == "星期六"] = "Saturday"
 # data$day[data$day == '星期日'] = "Sunday"
@@ -54,7 +54,9 @@ data$test = data$temp * data$humidity
 
 data$year = year(data$datetime)
 ## 产生皮尔逊相关参数
-cor_data = data.frame(train$count,
+cor_data = data.frame(train$count
+                      
+                      
                       train$temp,
                       train$humidity,
                       train$atemp,
@@ -63,8 +65,8 @@ cor(cor_data)
 ###分为四个季度????
 data$month = month(data$datetime)
 par(mfrow = c(2, 1))
-boxplot(casual ~ hour1, data = train)
-f = rpart(casual ~ hour1, data = train)
+boxplot(casual ~ hour1, data = data)
+f = rpart(casual ~ hour1, data = data)
 rpart.plot(f)
 train$hour1 = as.factor(hour(train$datetime))
 boxplot(registered ~ hour1, data = train)
@@ -114,8 +116,11 @@ data$tlevel[data$hour1 %in% c(11:19)] = 1
 data$hour1 = as.factor(data$hour1)
 data$day = as.factor(data$day)
 data$daytype = as.factor(data$daytype)
+
+ 
+
 set.seed(1234)
-set.seed(451)
+ 
 train = data[data$label == 'train', ]
 test = data[data$label == 'test', ]
 
@@ -123,16 +128,18 @@ test = data[data$label == 'test', ]
 str(train)
 train$logreg = log(train$registered + 1)
 train$logcas = log(train$casual + 1)
+test$logreg=0
+test$logcas=0
 fit1 = ranger(
   formula = logreg ~ hour1 + workingday + day + weekend + holiday  + temp_reg + humidity +
-    atemp + windspeed + season + weather + dp_reg +  year + tlevel + test,
+    atemp + windspeed + season + weather + dp_reg +  year + tlevel + weatherCond,
   data = train,
   num.trees = 3000,
   num.threads = 8
 )
 fit2 = ranger(
   formula = logcas ~ hour1 + workingday + day + weekend  + holiday  + temp_reg + humidity +
-    atemp + windspeed + season + weather + dp_cas +  year + tlevel + test,
+    atemp + windspeed + season + weather + dp_cas +  year + tlevel + weatherCond,
   data = train,
   num.trees = 3000,
   num.threads = 8
@@ -147,3 +154,26 @@ test$casual = exp(test$logcas)
 test$count = test$registered + test$casual
 submit_final = data.frame(datetime = test$datetime, count = as.integer(test$count))
 write.csv(submit_final, "sub4.csv")
+############try with lasso
+library(glmnet)
+formula1=as.formula(logreg ~ hour1 + workingday + day + weekend + holiday  + temp_reg + humidity +
+                      atemp + windspeed + season + weather + dp_reg +  year + tlevel + weatherCond)
+x1=model.matrix(formula1,train)
+y1=log(train$registered + 1)
+
+formula2=as.formula(logcas ~ hour1 + workingday + day + weekend  + holiday  + temp_reg + humidity +
+                      atemp + windspeed + season + weather + dp_cas +  year + tlevel + weatherCond)
+x2=model.matrix(formula2,train)
+y2=log(train$casual + 1)
+set.seed(1234)
+lassoreg=cv.glmnet(x1,y1,alpha=1)
+lassocas=cv.glmnet(x2,y2,alpha=1)
+lasso.predreg=predict(lassoreg,newx=model.matrix(formula1,test),s='lambda.min')
+lasso.predcas=predict(lassocas,newx=model.matrix(formula2,test),s='lambda.min')
+test$registered=exp(lasso.predreg)
+test$casual=exp(lasso.predcas)
+lasso_final = data.frame("datetime" = test$datetime, "count" = round(test$registered+test$casual))
+write.csv(lasso_final, "lasso.csv")
+
+
+
